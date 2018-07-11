@@ -95,11 +95,15 @@ var doCollision = function(ball1, ball2) {
   var between = Math.sqrt(dx*dx + dy*dy);
   var collide = between <= dist;
   if (collide) {
+
     var scalex = (ball2.x - ball1.x) / between;
     var scaley = (ball2.y - ball1.y) / between;
+
+    // Do collision as if ball 2 was stationary
+
     // Calculate the velocity transfers
-    var tx = (ball2.vx - ball1.vx) * scalex;
-    var ty = (ball2.vy - ball1.vy) * scaley;
+    var tx = (ball1.vx - ball2.vx) * scalex;
+    var ty = (ball1.vy - ball2.vy) * scaley;
     //var tx2 = ball2.vx * scalex;
     //var ty2 = ball2.vy * scaley;
     // Set new velocities
