@@ -105,13 +105,7 @@ Ball.prototype.move = function() {
       balls[i].collisions.push(this);
     }
   }
-};
-Ball.prototype.capVelocity = function() {
-  var max = 5;
-  var mag = this.velocity.magnitude();
-  if (mag > max) {
-    this.velocity.scale(max/mag);
-  }
+
   // Move away from edges
   if (this.x < this.radius) {
     this.x = this.radius + 1;
@@ -124,6 +118,13 @@ Ball.prototype.capVelocity = function() {
   }
   if (this.y > canvas.height - this.radius) {
     this.y = canvas.height - this.radius - 1;
+  }
+};
+Ball.prototype.capVelocity = function() {
+  var max = 5;
+  var mag = this.velocity.magnitude();
+  if (mag > max) {
+    this.velocity.scale(max/mag);
   }
 };
 Ball.resetCollisions = function() {
