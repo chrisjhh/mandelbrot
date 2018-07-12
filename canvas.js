@@ -165,7 +165,7 @@ var doCollision = function(ball1, ball2) {
     ball1.capVelocity();
     ball2.capVelocity();
     // Move appart
-    var overlap = dist - distBetween;
+    var overlap = dist - distBetween + 1;
     var dispacement = contactDir.scaledBy(overlap/2);
     ball1.displace(dispacement.reversed());
     ball2.displace(dispacement);
