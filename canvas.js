@@ -61,6 +61,9 @@ var Ball = function(x,y,radius,color) {
   this.radius = radius;
   this.color = color;
 
+  // Mass is proportional to the cube of the radius
+  this.mass = radius * radius * radius;
+
   // Randomise velocities
   this.velocity = new Vector(
     (Math.random() * 2) -1,
@@ -148,9 +151,15 @@ var doCollision = function(ball1, ball2) {
     var scale = closingVelocity.dotProduct(contactDir);
     var transfer = contactDir.scaledBy(scale);
 
+    // Amount of velocity tansfered depends on ratio of mass
+    var massRatio = ball2.mass / ball1.mass;
+    var b2scale = 2 / ( 1 + massRatio);
+    var transfer2 = transfer.scaledBy(b2scale);
+    var transfer1 = transfer2.scaledBy(massRatio);
+
     // Transfer this velocity from ball1 to ball2
-    ball1.velocity = ball1.velocity.subtract(transfer);
-    ball2.velocity = ball2.velocity.add(transfer);
+    ball1.velocity = ball1.velocity.subtract(transfer1);
+    ball2.velocity = ball2.velocity.add(transfer2);
 
     // Cap max velocities
     ball1.capVelocity();
@@ -164,10 +173,10 @@ var doCollision = function(ball1, ball2) {
   return collide;
 };
 
-var ball1 = new Ball(20,20,10,'red');
-var ball2 = new Ball(120,120,10,'blue');
+var ball1 = new Ball(20,20,6,'red');
+var ball2 = new Ball(120,120,8,'blue');
 var ball3 = new Ball(60,90,10,'orange');
-var ball4 = new Ball(90,50,10,'green');
+var ball4 = new Ball(90,50,12,'green');
 
 
 var draw = function() {
