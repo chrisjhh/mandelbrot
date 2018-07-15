@@ -42,7 +42,7 @@ var mandelbrot = function(complex) {
     if (iteration >= 400) {
       return null;
     } 
-    cn = cn.squared().minus(c0);
+    cn = cn.squared().subtract(c0);
   }
   return iteration;
 };
@@ -66,7 +66,7 @@ var draw = function(ctx,x1,y1,x2,y2,c1,c2) {
   }
   var dx = Math.floor(width / 3);
   var dy = Math.floor(height / 3);
-  var dc = c2.minus(c1);
+  var dc = c2.subtract(c1);
   if (dx > 0 && dy > 0) {
     for (var i=0; i< 3; ++i) {
       var nx1 = x1 + dx * i;
@@ -83,7 +83,7 @@ var draw = function(ctx,x1,y1,x2,y2,c1,c2) {
         var nc1i = c1.i + dc.i * j;
         var nc2i = nc1i + dc.i;
         var nc1 = new Complex(nc1r, nc1i);
-        var nc2 = new Complex(nc2r, nc12);
+        var nc2 = new Complex(nc2r, nc2i);
         setTimeout(function() {
           draw(ctx,nx1,ny1,nx2,ny2,nc1,nc2);
         },0);
@@ -107,11 +107,11 @@ var draw = function(ctx,x1,y1,x2,y2,c1,c2) {
 }
 
 var drawOnCanvas = function() {
-  canvas = document.getElementById('canvas');
-  ctx = canvas.getContext('2d');
+  var canvas = document.getElementById('canvas');
+  var ctx = canvas.getContext('2d');
   var c1 = new Complex(-2,2);
   var c2 = new Complex(2,-2);
-  draw(ctx,0,0,canvas.width,canvas.heigth, c1, c2);
+  draw(ctx,0,0,canvas.width,canvas.height, c1, c2);
 };
 
-window.onload = drawOnCanvas();
+window.onload = drawOnCanvas;
