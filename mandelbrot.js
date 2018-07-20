@@ -8,12 +8,12 @@ Complex.prototype.toString = function() {
     return this.r.toString();
   }
   if (!this.r) {
-    return this.i.toString() + "i";
+    return this.i.toString() + 'i';
   }
   if (this.i > 0) {
-    return this.r.toString() + " + " + this.i.toString() + "i";
+    return this.r.toString() + ' + ' + this.i.toString() + 'i';
   } else {
-    return this.r.toString() + " - " + (-this.i).toString() + "i";
+    return this.r.toString() + ' - ' + (-this.i).toString() + 'i';
   }
 };
 Complex.prototype.add = function(complex) {
@@ -47,10 +47,10 @@ Complex.prototype.magnitudeSquared = function() {
 };
 Complex.prototype.real = function() {
   return new Complex(this.r, 0);
-}
+};
 Complex.prototype.imaginary = function() {
   return new Complex(0, this.i);
-}
+};
 
 const MandelbrotBox = function(x,y,width,height,c1,c2) {
   this.x = x;
@@ -122,16 +122,16 @@ var draw = function(ctx,box) {
   if (box.width > 1 || box.height > 1) {
     let boxes = box.subBoxes();
     for (let b of boxes) {
-      setTimeout(() => {draw(ctx,b)}, 0);
+      setTimeout(() => {draw(ctx,b);}, 0);
     }
   }
-}
+};
 
 var drawOnCanvas = function() {
   var canvas = document.getElementById('canvas');
   var ctx = canvas.getContext('2d');
-  var c1 = new Complex(-1,1);
-  var c2 = new Complex(2,-1);
+  var c1 = new Complex(-1,1.2);
+  var c2 = new Complex(2,-1.2);
   var box = new MandelbrotBox(0,0,canvas.width,canvas.height, c1, c2);
   draw(ctx,box);
 };

@@ -1,0 +1,19 @@
+{
+  "name": "canvas",
+  "version": "1.0.0",
+  "description": "playing with canvas",
+  "main": "canvas.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chrisjhh/bounce.git"
+  },
+  "author": "Chris Hamer-Hodges",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chrisjhh/bounce/issues"
+  },
+  "homepage": "https://github.com/chrisjhh/bounce#readme"
+}
