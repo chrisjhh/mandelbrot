@@ -61,8 +61,7 @@ const MandelbrotBox = function(x,y,width,height,c1,c2) {
   this.c2 = c2;
 };
 MandelbrotBox.prototype.draw = function(ctx) {
-  const cmid = this.c1.add(this.c2).multiply(0.5);
-  let value = mandelbrot(cmid);
+  let value = this.calculate(720);
   if (value === null) {
     ctx.fillStyle = 'black';
   } else {
@@ -100,22 +99,35 @@ MandelbrotBox.prototype.subBoxes = function() {
   }
   return boxes;
 };
-
-var mandelbrot = function(complex) {
-  var iteration = 0;
-  var c0 = complex;
-  var cn = c0;
-  while (cn.magnitudeSquared() < 4) {
-    ++iteration;
-    if (iteration >= 400) {
-      //console.log("mandelbrot(" + complex + ") -> null");
-      return null;
-    } 
-    cn = cn.squared().subtract(c0);
+MandelbrotBox.prototype.calculate = function(depth) {
+  // Return cached result if already calculated
+  if (this.result || 
+    (this.calculation && this.calculation.depth >= depth)) {
+    return this.result;
   }
-  //console.log("mandelbrot(" + complex + ") -> " + iteration);
-  return iteration;
+  if (!this.calculation) {
+    this.calculation = {};
+    this.calculation.c0 = this.c1.add(this.c2).multiply(0.5);
+    this.calculation.depth = 0;
+    this.calculation.cn = this.calculation.c0;
+  }
+  
+  while (this.calculation.cn.magnitudeSquared() < 4) {
+    ++this.calculation.depth;
+    if (this.calculation.depth >= depth) {
+      this.result = null;
+      return this.result;
+    } 
+    this.calculation.cn = this.calculation.cn
+      .squared().subtract(this.calculation.c0);
+  }
+  this.result = this.calculation.depth;
+  // Done with calculations now
+  delete this.calculation;
+
+  return this.result;
 };
+
 
 var draw = function(ctx,box) {
   box.draw(ctx);
