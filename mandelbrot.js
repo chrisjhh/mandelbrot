@@ -75,7 +75,7 @@ MandelbrotBox.prototype.complexAtPoint = function(x,y) {
   const dx = x - this.x;
   const dy = y - this.y;
   const dc = this.c2.subtract(this.c1);
-  return this.c1.add(dc.real().multiply(dx/this.width)).add(dc.imaginary().multiply(dy/this.width));
+  return this.c1.add(dc.real().multiply(dx/this.width)).add(dc.imaginary().multiply(dy/this.height));
 };
 MandelbrotBox.prototype.subBoxes = function() {
   let boxes = [];
@@ -129,10 +129,11 @@ var draw = function(ctx,box) {
 
 var drawOnCanvas = function() {
   var canvas = document.getElementById('canvas');
+  //console.log(canvas);
   var ctx = canvas.getContext('2d');
   var c1 = new Complex(-1,1.2);
   var c2 = new Complex(2,-1.2);
-  var box = new MandelbrotBox(0,0,canvas.width,canvas.height, c1, c2);
+  var box = new MandelbrotBox(0,0,canvas.offsetWidth,canvas.offsetHeight, c1, c2);
   draw(ctx,box);
 };
 
