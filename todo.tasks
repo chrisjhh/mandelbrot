@@ -1,0 +1,4 @@
+Mandelbrot:
+  ☐ Use draw queue rather than exponential timeouts!
+  ☐ Pause, resume and redraw
+  ☐ Zoom in

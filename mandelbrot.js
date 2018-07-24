@@ -62,6 +62,10 @@ const MandelbrotBox = function(x,y,width,height,c1,c2) {
 };
 MandelbrotBox.prototype.draw = function(ctx) {
   let value = this.calculate(720);
+  if (this.parent && value === this.parent.result) {
+    // No need to draw subbox of same clour as parent
+    return;
+  }
   if (value === null) {
     ctx.fillStyle = 'black';
   } else {
@@ -77,7 +81,10 @@ MandelbrotBox.prototype.complexAtPoint = function(x,y) {
   return this.c1.add(dc.real().multiply(dx/this.width)).add(dc.imaginary().multiply(dy/this.height));
 };
 MandelbrotBox.prototype.subBoxes = function() {
-  let boxes = [];
+  if (this._subboxes) {
+    return this._subboxes;
+  }
+  this._subboxes = [];
   let dx = this.width / 3;
   if (dx < 1) {
     dx = 1;
@@ -94,10 +101,12 @@ MandelbrotBox.prototype.subBoxes = function() {
       let h = Math.floor(y + dy - iy);
       let nc1 = this.complexAtPoint(ix,iy);
       let nc2 = this.complexAtPoint(ix+dx,iy+dy);
-      boxes.push(new MandelbrotBox(ix,iy,w,h,nc1,nc2));
+      const box = new MandelbrotBox(ix,iy,w,h,nc1,nc2);
+      box.parent = this;
+      this._subboxes.push(box);
     }
   }
-  return boxes;
+  return this._subboxes;
 };
 MandelbrotBox.prototype.calculate = function(depth) {
   // Return cached result if already calculated
@@ -128,16 +137,21 @@ MandelbrotBox.prototype.calculate = function(depth) {
   return this.result;
 };
 
-
-var draw = function(ctx,box) {
-  box.draw(ctx);
-  if (box.width > 1 || box.height > 1) {
-    let boxes = box.subBoxes();
+MandelbrotBox.prototype.recursiveDraw = function(ctx) {
+  this.draw(ctx);
+  if (this.width > 1 || this.height > 1) {
+    let boxes = this.subBoxes();
     for (let b of boxes) {
-      setTimeout(() => {draw(ctx,b);}, 0);
+      MandelbrotBox.drawQueue.push(b);
     }
   }
+  if (MandelbrotBox.drawQueue.length > 0) {
+    const next = MandelbrotBox.drawQueue.shift();
+    setTimeout(() => {next.recursiveDraw.bind(next)(ctx);}, 0);
+  }
 };
+MandelbrotBox.drawQueue = [];
+
 
 var drawOnCanvas = function() {
   var canvas = document.getElementById('canvas');
@@ -145,8 +159,8 @@ var drawOnCanvas = function() {
   var ctx = canvas.getContext('2d');
   var c1 = new Complex(-1,1.2);
   var c2 = new Complex(2,-1.2);
-  var box = new MandelbrotBox(0,0,canvas.offsetWidth,canvas.offsetHeight, c1, c2);
-  draw(ctx,box);
+  var box = new MandelbrotBox(0,0,canvas.width,canvas.height, c1, c2);
+  box.recursiveDraw(ctx);
 };
 
 window.onload = drawOnCanvas;
