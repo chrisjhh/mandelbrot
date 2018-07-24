@@ -110,10 +110,12 @@ MandelbrotBox.prototype.subBoxes = function() {
 };
 MandelbrotBox.prototype.calculate = function(depth) {
   // Return cached result if already calculated
-  if (this.result || 
+  if (this.result || this.result === 0 || 
     (this.calculation && this.calculation.depth >= depth)) {
+    //console.log("Shortcut calculation");
     return this.result;
   }
+  console.log('Doing calculation');
   if (!this.calculation) {
     this.calculation = {};
     this.calculation.c0 = this.c1.add(this.c2).multiply(0.5);
@@ -189,4 +191,17 @@ const restart = function() {
   const canvas = document.getElementById('canvas');
   const  ctx = canvas.getContext('2d');
   MandelbrotBox.root.recursiveDraw(ctx);
+  const button = document.getElementById('button');
+  button.innerHTML = 'Pause';
+};
+
+const togglePause = function() {
+  const button = document.getElementById('button');
+  if (MandelbrotBox.paused) {
+    resume();
+    button.innerHTML = 'Pause';
+  } else {
+    pause();
+    button.innerHTML = 'Resume';
+  }
 };
