@@ -146,8 +146,10 @@ MandelbrotBox.prototype.recursiveDraw = function(ctx) {
     }
   }
   if (MandelbrotBox.drawQueue.length > 0) {
-    const next = MandelbrotBox.drawQueue.shift();
-    setTimeout(() => {next.recursiveDraw.bind(next)(ctx);}, 0);
+    if (!MandelbrotBox.paused) {
+      const next = MandelbrotBox.drawQueue.shift();
+      setTimeout(() => {next.recursiveDraw.bind(next)(ctx);}, 0);
+    }
   }
 };
 MandelbrotBox.drawQueue = [];
@@ -160,7 +162,30 @@ var drawOnCanvas = function() {
   var c1 = new Complex(-1,1.2);
   var c2 = new Complex(2,-1.2);
   var box = new MandelbrotBox(0,0,canvas.width,canvas.height, c1, c2);
+  MandelbrotBox.root = box;
   box.recursiveDraw(ctx);
 };
 
 window.onload = drawOnCanvas;
+
+const pause = function() {
+  MandelbrotBox.paused = true;
+};
+
+const resume = function() {
+  MandelbrotBox.paused = false;
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  if (MandelbrotBox.drawQueue.length > 0) {
+    const next = MandelbrotBox.drawQueue.shift();
+    next.recursiveDraw(ctx);
+  }
+};
+
+const restart = function() {
+  MandelbrotBox.drawQueue = [];
+  MandelbrotBox.paused = false;
+  const canvas = document.getElementById('canvas');
+  const  ctx = canvas.getContext('2d');
+  MandelbrotBox.root.recursiveDraw(ctx);
+};
