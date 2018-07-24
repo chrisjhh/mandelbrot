@@ -1,5 +1,5 @@
 // Class representing a complex number
-var Complex = function(real, imaginary) {
+const Complex = function(real, imaginary) {
   this.r = real;
   this.i = imaginary !== undefined ? imaginary: 0;
 };
@@ -32,8 +32,8 @@ Complex.prototype.multiply = function(complex) {
   if (typeof complex === 'number') {
     return new Complex(this.r * complex, this.i * complex);
   }
-  var real = this.r * complex.r - this.i * complex.i;
-  var imaginary = this.r * complex.i + this.i * complex.r;
+  let real = this.r * complex.r - this.i * complex.i;
+  let imaginary = this.r * complex.i + this.i * complex.r;
   return new Complex(real, imaginary);
 };
 Complex.prototype.squared = function() {
@@ -156,13 +156,13 @@ MandelbrotBox.drawQueue = [];
 MandelbrotBox.maxDepth = 720;
 
 
-var drawOnCanvas = function() {
-  var canvas = document.getElementById('canvas');
+const drawOnCanvas = function() {
+  const canvas = document.getElementById('canvas');
   //console.log(canvas);
-  var ctx = canvas.getContext('2d');
-  var c1 = new Complex(-1,1.2);
-  var c2 = new Complex(2,-1.2);
-  var box = new MandelbrotBox(0,0,canvas.width,canvas.height, c1, c2);
+  const ctx = canvas.getContext('2d');
+  let c1 = new Complex(-1,1.2);
+  let c2 = new Complex(2,-1.2);
+  let box = new MandelbrotBox(0,0,canvas.width,canvas.height, c1, c2);
   MandelbrotBox.root = box;
   box.recursiveDraw(ctx);
 };
