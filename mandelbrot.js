@@ -147,11 +147,26 @@ MandelbrotBox.prototype.recursiveDraw = function(ctx) {
       MandelbrotBox.drawQueue.push(b);
     }
   }
-  if (MandelbrotBox.drawQueue.length > 0) {
-    if (!MandelbrotBox.paused) {
-      const next = MandelbrotBox.drawQueue.shift();
-      setTimeout(() => {next.recursiveDraw.bind(next)(ctx);}, 0);
+};
+
+MandelbrotBox.drawFromQueue = function(ctx) {
+  const start = new Date();
+  let count = 1;
+  while (MandelbrotBox.drawQueue.length > 0 &&
+        !MandelbrotBox.paused) {
+    const next = MandelbrotBox.drawQueue.shift();
+    next.recursiveDraw(ctx);
+    if (++count % 25 == 0) {
+      const now = new Date();
+      const elapsed = now - start;
+      if (elapsed > 200) {
+        break;
+      } 
     }
+  }
+  if (MandelbrotBox.drawQueue.length > 0 && 
+    !MandelbrotBox.paused) {
+    setTimeout(() => MandelbrotBox.drawFromQueue(ctx), 0);
   }
 };
 MandelbrotBox.drawQueue = [];
@@ -167,6 +182,7 @@ const drawOnCanvas = function() {
   let box = new MandelbrotBox(0,0,canvas.width,canvas.height, c1, c2);
   MandelbrotBox.root = box;
   box.recursiveDraw(ctx);
+  MandelbrotBox.drawFromQueue(ctx);
 };
 
 window.onload = drawOnCanvas;
@@ -179,10 +195,7 @@ const resume = function() {
   MandelbrotBox.paused = false;
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
-  if (MandelbrotBox.drawQueue.length > 0) {
-    const next = MandelbrotBox.drawQueue.shift();
-    next.recursiveDraw(ctx);
-  }
+  MandelbrotBox.drawFromQueue(ctx);
 };
 
 const restart = function() {
@@ -191,6 +204,7 @@ const restart = function() {
   const canvas = document.getElementById('canvas');
   const  ctx = canvas.getContext('2d');
   MandelbrotBox.root.recursiveDraw(ctx);
+  MandelbrotBox.drawFromQueue(ctx);
   const button = document.getElementById('button');
   button.innerHTML = 'Pause';
 };
