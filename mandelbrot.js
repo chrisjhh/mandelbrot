@@ -61,7 +61,7 @@ const MandelbrotBox = function(x,y,width,height,c1,c2) {
   this.c2 = c2;
 };
 MandelbrotBox.prototype.draw = function(ctx) {
-  let value = this.calculate(720);
+  let value = this.calculate(MandelbrotBox.maxDepth);
   if (this.parent && value === this.parent.result) {
     // No need to draw subbox of same clour as parent
     return;
@@ -153,6 +153,7 @@ MandelbrotBox.prototype.recursiveDraw = function(ctx) {
   }
 };
 MandelbrotBox.drawQueue = [];
+MandelbrotBox.maxDepth = 720;
 
 
 var drawOnCanvas = function() {
