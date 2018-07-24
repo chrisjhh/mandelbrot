@@ -115,7 +115,6 @@ MandelbrotBox.prototype.calculate = function(depth) {
     //console.log("Shortcut calculation");
     return this.result;
   }
-  console.log('Doing calculation');
   if (!this.calculation) {
     this.calculation = {};
     this.calculation.c0 = this.c1.add(this.c2).multiply(0.5);
