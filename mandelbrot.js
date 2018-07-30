@@ -219,6 +219,8 @@ const mouseUp = function(event) {
   let c1 = MandelbrotBox.root.complexAtPoint(savedPos.x,savedPos.y);
   let c2 = MandelbrotBox.root.complexAtPoint(event.clientX, event.clientY);
   let box = new MandelbrotBox(0,0,canvas.width,canvas.height, c1, c2);
+  let scale = canvas.width * canvas.height / ((event.clientX - savedPos.x) * (event.clientY - savedPos.y));
+  MandelbrotBox.maxDepth *= scale;
   MandelbrotBox.pause = true;
   MandelbrotBox.root = box;
   box.recursiveDraw(ctx);
