@@ -64,6 +64,7 @@ MandelbrotBox.prototype.draw = function(ctx) {
   let value = this.calculate(MandelbrotBox.maxDepth);
   if (this.parent && value === this.parent.result) {
     // No need to draw subbox of same clour as parent
+    MandelbrotBox.calculations += 1;
     return;
   }
   if (value === null) {
@@ -73,6 +74,7 @@ MandelbrotBox.prototype.draw = function(ctx) {
     ctx.fillStyle = `hsl(${value},100%,50%)`;
   }
   ctx.fillRect(this.x,this.y,this.width,this.height);
+  MandelbrotBox.calculations += 1;
 };
 MandelbrotBox.prototype.complexAtPoint = function(x,y) {
   const dx = x - this.x;
@@ -130,6 +132,7 @@ MandelbrotBox.prototype.calculate = function(depth) {
     } 
     this.calculation.cn = this.calculation.cn
       .squared().subtract(this.calculation.c0);
+    MandelbrotBox.calculations += 1;
   }
   this.result = this.calculation.depth;
   // Done with calculations now
@@ -149,19 +152,11 @@ MandelbrotBox.prototype.recursiveDraw = function(ctx) {
 };
 
 MandelbrotBox.drawFromQueue = function(ctx) {
-  const start = new Date();
-  let count = 1;
-  while (MandelbrotBox.drawQueue.length > 0 &&
-        !MandelbrotBox.paused) {
+  MandelbrotBox.calculations = 0;
+  while (MandelbrotBox.calculations < 1000 && 
+    MandelbrotBox.drawQueue.length > 0 && !MandelbrotBox.paused) {
     const next = MandelbrotBox.drawQueue.shift();
     next.recursiveDraw(ctx);
-    if (++count % 25 == 0) {
-      const now = new Date();
-      const elapsed = now - start;
-      if (elapsed > 200) {
-        break;
-      } 
-    }
   }
   if (MandelbrotBox.drawQueue.length > 0 && 
     !MandelbrotBox.paused) {
@@ -182,7 +177,54 @@ const drawOnCanvas = function() {
   MandelbrotBox.root = box;
   box.recursiveDraw(ctx);
   MandelbrotBox.drawFromQueue(ctx);
+
+  canvas.onmousedown = mouseDown;
+  canvas.onmousemove = mouseMove;
+  canvas.onmouseup = mouseUp;
 };
+
+let imageSoFar;
+let savedPos = {};
+let mouseButtonDown = false;
+const mouseDown = function(event) {
+  if (event.button !== 0) {
+    return;
+  }
+  mouseButtonDown = true;
+  MandelbrotBox.pause = true;
+  savedPos.x = event.clientX;
+  savedPos.y = event.clientY;
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  imageSoFar = ctx.getImageData(0,0,canvas.width,canvas.height);
+};
+const mouseMove = function(event) {
+  if (!mouseButtonDown) {
+    return;
+  }
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  ctx.putImageData(imageSoFar,0,0);
+  ctx.beginPath();
+  ctx.strokeStyle = 'white';
+  ctx.rect(savedPos.x,savedPos.y,event.clientX-savedPos.x,event.clientY-savedPos.y);
+  ctx.stroke();
+};
+const mouseUp = function(event) {
+  mouseButtonDown = false;
+  MandelbrotBox.drawQueue = [];
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  ctx.putImageData(imageSoFar,0,0);
+  let c1 = MandelbrotBox.root.complexAtPoint(savedPos.x,savedPos.y);
+  let c2 = MandelbrotBox.root.complexAtPoint(event.clientX, event.clientY);
+  let box = new MandelbrotBox(0,0,canvas.width,canvas.height, c1, c2);
+  MandelbrotBox.pause = true;
+  MandelbrotBox.root = box;
+  box.recursiveDraw(ctx);
+  MandelbrotBox.drawFromQueue(ctx);
+};
+
 
 window.onload = drawOnCanvas;
 
