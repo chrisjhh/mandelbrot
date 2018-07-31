@@ -153,7 +153,7 @@ MandelbrotBox.prototype.recursiveDraw = function(ctx) {
 
 MandelbrotBox.drawFromQueue = function(ctx) {
   MandelbrotBox.calculations = 0;
-  while (MandelbrotBox.calculations < 1000 && 
+  while (MandelbrotBox.calculations < 500 && 
     MandelbrotBox.drawQueue.length > 0 && !MandelbrotBox.paused) {
     const next = MandelbrotBox.drawQueue.shift();
     next.recursiveDraw(ctx);
@@ -165,6 +165,21 @@ MandelbrotBox.drawFromQueue = function(ctx) {
 };
 MandelbrotBox.drawQueue = [];
 MandelbrotBox.maxDepth = 720;
+
+const canvasPosFromMouseEvent = function(e) {
+  const canvas = document.getElementById('canvas');
+  let pos = {};
+  if (e.pageX || e.pageY) { 
+    pos.x = e.pageX;
+    pos.y = e.pageY;
+  } else { 
+    pos.x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
+    pos.y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
+  } 
+  pos.x -= canvas.offsetLeft;
+  pos.y -= canvas.offsetTop;
+  return pos;
+};
 
 
 const drawOnCanvas = function() {
@@ -192,8 +207,7 @@ const mouseDown = function(event) {
   }
   mouseButtonDown = true;
   MandelbrotBox.pause = true;
-  savedPos.x = event.clientX;
-  savedPos.y = event.clientY;
+  savedPos = canvasPosFromMouseEvent(event);
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
   imageSoFar = ctx.getImageData(0,0,canvas.width,canvas.height);
@@ -204,10 +218,15 @@ const mouseMove = function(event) {
   }
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
+  const pos = canvasPosFromMouseEvent(event);
+  const x1 = Math.min(savedPos.x, pos.x);
+  const x2 = Math.max(savedPos.x, pos.x);
+  const y1 = Math.min(savedPos.y, pos.y);
+  const y2 = Math.max(savedPos.y, pos.y);
   ctx.putImageData(imageSoFar,0,0);
   ctx.beginPath();
   ctx.strokeStyle = 'white';
-  ctx.rect(savedPos.x,savedPos.y,event.clientX-savedPos.x,event.clientY-savedPos.y);
+  ctx.rect(x1,y1,x2-x1,y2-y1);
   ctx.stroke();
 };
 const mouseUp = function(event) {
@@ -216,12 +235,18 @@ const mouseUp = function(event) {
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
   ctx.putImageData(imageSoFar,0,0);
-  let c1 = MandelbrotBox.root.complexAtPoint(savedPos.x,savedPos.y);
-  let c2 = MandelbrotBox.root.complexAtPoint(event.clientX, event.clientY);
+  const pos = canvasPosFromMouseEvent(event);
+  const x1 = Math.min(savedPos.x, pos.x);
+  const x2 = Math.max(savedPos.x, pos.x);
+  const y1 = Math.min(savedPos.y, pos.y);
+  const y2 = Math.max(savedPos.y, pos.y);
+  let c1 = MandelbrotBox.root.complexAtPoint(x1,y1);
+  let c2 = MandelbrotBox.root.complexAtPoint(x2,y2);
   let box = new MandelbrotBox(0,0,canvas.width,canvas.height, c1, c2);
-  let scale = canvas.width * canvas.height / ((event.clientX - savedPos.x) * (event.clientY - savedPos.y));
+  let scale = canvas.width * canvas.height / ((x2 - x1) * (y2 - y1));
+  if (Number.isNaN(scale) || scale <= 0) scale = 1;
   MandelbrotBox.maxDepth *= scale;
-  MandelbrotBox.pause = true;
+  MandelbrotBox.pause = false;
   MandelbrotBox.root = box;
   box.recursiveDraw(ctx);
   MandelbrotBox.drawFromQueue(ctx);
