@@ -230,6 +230,9 @@ const mouseMove = function(event) {
   ctx.stroke();
 };
 const mouseUp = function(event) {
+  if (!mouseButtonDown || event.button !== 0) {
+    return;
+  }
   mouseButtonDown = false;
   MandelbrotBox.drawQueue = [];
   const canvas = document.getElementById('canvas');
