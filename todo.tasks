@@ -6,4 +6,4 @@ Mandelbrot:
   ☐ Allow completed images to be saved with metadata
   ☐ Allow previously completed images to be loaded
   ☐ Use a "black list" optimisation to process black on black boxes last with increasing depth
-  
+  ☐ Use BigDecimal or similar when precision runs out
