@@ -2,7 +2,8 @@ Mandelbrot:
   ✔ Use draw queue rather than exponential timeouts! @done (2018-7-24 20:26:49)
   ✔ Pause, resume and redraw @done (2018-7-24 20:26:53)
   ✔ Zoom in @done (2018-7-30 20:06:42)
-  ☐ Put into its own repo
+  ✔ Put into its own repo @done (2018-8-3 07:24:31)
+  ☐ Convert to ES6 modules
   ☐ Allow completed images to be saved with metadata
   ☐ Allow previously completed images to be loaded
   ☐ Use a "black list" optimisation to process black on black boxes last with increasing depth
