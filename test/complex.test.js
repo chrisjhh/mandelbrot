@@ -121,12 +121,12 @@ describe('Complex', function() {
     expect(Complex.fromString('-2.7 - 3.5i'))
       .to.deep.equal({r:-2.7,i:-3.5});
     expect(Complex.fromString('-2.7e-3 - 3.53e-2i'))
-      .to.deep.equal({r:-0.0027,i:-0.035});
+      .to.deep.almost({r:-0.0027,i:-0.0353});
     const c1 = new Complex(1.343547456, 345454353.44);
     expect(Complex.fromString(c1.toString()))
       .to.deep.almost(c1);
     expect(Complex.fromString('orange'))
-      .to.deep.equal({r:NaN, i:NaN});
+      .to.deep.equal({r:NaN, i:0});
   });
 
 });
